@@ -37,8 +37,22 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
+		//売り上げ集計課題のファイルの中にある全てのファイルを配列にする指示
+	    File[] files = new File(args[0]).listFiles();
 
+		//全ファイル数分の処理を繰り返し行うことを指示
+		for(int i = 0; i < files.length ; i++) {
+			 System.out.println (files[i].getName());
+		}
+		//全ファイル数分の処理を繰り返し行うことを指示
+		if(args[0].matches ("[0-9]{5}")){
+		if(args[0].matches(".+rcd$")) {
 
+			? = new ArrayList<>();
+			rcdFiles.add(files[i]?);
+		}
+
+		}
 
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
@@ -68,6 +82,12 @@ public class CalculateSales {
 			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
+				String[] items = line.split(",");
+
+				//Mapに追加する2つの情報を putの引数として指定します。
+				branchNames.put( items[0], items[1]);
+				branchSales.put( items[0], 0L);
+
 				System.out.println(line);
 			}
 
