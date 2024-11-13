@@ -24,10 +24,11 @@ public class CalculateSales {
 
 	/**
 	 * メインメソッド
+	 * @param line
 	 *
 	 * @param コマンドライン引数
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args, Object line) {
 		// 支店コードと支店名を保持するMap
 		Map<String, String> branchNames = new HashMap<>();
 		// 支店コードと売上金額を保持するMap
@@ -59,17 +60,32 @@ public class CalculateSales {
 			}
 
 		for(int i = 0; i < rcdFiles.size(); i++) {
-
 				BufferedReader br = null;
+				rcdFiles.get(i).getName();
 
 				try {
-				File file = new File(rcdFiles);
+				File file = new File(args[0],rcdFiles.get(i).getName());
 				FileReader fr = new FileReader(file);
 				br = new BufferedReader(fr);
 
-				} catch(IOException e) {
+				/**
+				 * 読み込んだ内容を合計していくために「型の変換（次で説明）」
+				 *理由はファイルから取得した際にString型になっているが売り上げ金額は数値のため、
+				 *Long型に変換してからではないとMapに格納ができないため。
+				 */
+
+//				long fileSale = Long.parseLong();
+
+				//先にファイルの情報を格納する List(ArrayList) を宣⾔します。
+				List<String> salesAmount = new ArrayList<>();
+
+				while((line = br.readLine()) != null) {
+
+				}
+				}
+				catch(IOException e) {
 				System.out.println(UNKNOWN_ERROR);
-				return false;
+				return;
 				} finally {
 				// ファイルを開いている場合
 				if(br != null) {
@@ -78,12 +94,12 @@ public class CalculateSales {
 						br.close();
 					} catch(IOException e) {
 						System.out.println(UNKNOWN_ERROR);
-						return false;
+						return;
 					}
 				}
 			}
-			return true;
 			}
+
 
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
