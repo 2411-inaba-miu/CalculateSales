@@ -36,25 +36,24 @@ public class CalculateSales {
 		// 支店コードと売上金額を保持するMap
 		Map<String, Long> branchSales = new HashMap<>();
 
-			// 支店定義ファイル読み込み処理
-			if(!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
+		// 支店定義ファイル読み込み処理
+		if(!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
 			return;
-			}
+		}
 
-			// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-			//売り上げ集計課題のファイルの中にある全てのファイルを配列にする指示
-			File[] files = new File(args[0]).listFiles();
+		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
+		//売り上げ集計課題のファイルの中にある全てのファイルを配列にする指示
+		File[] files = new File(args[0]).listFiles();
 
 			//先にファイルの情報を格納する List(ArrayList) を宣⾔します。
-			List<File> rcdFiles = new ArrayList<>();
+		List<File> rcdFiles = new ArrayList<>();
+
+		//全ファイル数分の処理を繰り返し行うことを指示
+		for(int i = 0; i < files.length ; i++) {
+				String fileNames = files[i].getName();
 
 			//全ファイル数分の処理を繰り返し行うことを指示
-			for(int i = 0; i < files.length ; i++) {
-				String filenames = files[i].getName();
-
-
-			//全ファイル数分の処理を繰り返し行うことを指示
-			if(filenames.matches ("[0-9]{8}.+rcd$")) {
+			if(fileNames.matches ("[0-9]{8}. + rcd$")) {
 				rcdFiles.add(files[i]);
 			}
 		}
@@ -63,7 +62,7 @@ public class CalculateSales {
 				BufferedReader br = null;
 
 			try {
-				File file = new File(args[0],rcdFiles.get(i).getName());
+				File file = new File(args[0], rcdFiles.get(i).getName());
 				FileReader fr = new FileReader(file);
 				br = new BufferedReader(fr);
 
@@ -74,37 +73,38 @@ public class CalculateSales {
 				 */
 
 				//先にファイルの情報を格納する List(ArrayList) を宣⾔します。
-				List<String> fileLine = new ArrayList<>();
+				List<String> fileLines = new ArrayList<>();
 
 				String line;
 
 				while((line = br.readLine()) != null) {
-					fileLine.add(line);
+					fileLines.add(line);
 
 				}
 				//fileSaleはrcdファイルの中の2行目を読み込んだ売上金額
-				//saleAmountはMapの売上金額からkeyとなる支店コードを使って取得する既存の売上金額と新たに読み込んだ売上金額を加算したもの
-				String code = fileLine.get(0);
-				long fileSale = Long.parseLong(fileLine.get(1));
-				long saleAmount = branchSales.get(code)+fileSale;
+				//saleAmountはMapの売上金額からkeyとなる支店コードを使って取得する既存の売上金額と,
+				//新たに読み込んだ売上金額を加算したもの
+				String code = fileLines.get(0);
+				long fileSale = Long.parseLong(fileLines.get(1));
+				long saleAmount = branchSales.get(code) + fileSale;
 
 				//codeはbranchSalesというMapのkeyにあたる支店コードを表します
 				//fileSalesはrcdファイルの中の2行目の加算処理を行う売上金額を表します
 				//saleAmountは既存の売上金額と加算処理を行った売り上げ金額の合計を表します
 				//Mapの値を取得するためにcodeがkeyとしてvalueである既存の売上金額を呼び出します
 				//MapであるbranchSalesに支店コードと集計金額を格納します
-				branchSales.put(code,saleAmount);
+				branchSales.put(code, saleAmount);
 
 			}catch(IOException e) {
 				System.out.println(UNKNOWN_ERROR);
 				return;
-			} finally {
+			}finally {
 				// ファイルを開いている場合
 				if(br != null) {
 					try {
 						// ファイルを閉じる
 						br.close();
-					} catch(IOException e) {
+					}catch(IOException e) {
 						System.out.println(UNKNOWN_ERROR);
 						return;
 					}
@@ -148,23 +148,23 @@ public class CalculateSales {
 			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
-			String[] items = line.split(",");
+				String[] items = line.split(",");
 
-			//Mapに追加する2つの情報を putの引数として指定します。
+				//Mapに追加する2つの情報を putの引数として指定します。
 				branchNames.put( items[0], items[1]);
 				branchSales.put( items[0], 0L);
 			}
 
-		} catch(IOException e) {
+		}catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
 			return false;
-		} finally {
+		}finally {
 			// ファイルを開いている場合
 			if(br != null) {
 				try {
 					// ファイルを閉じる
 					br.close();
-				} catch(IOException e) {
+				}catch(IOException e) {
 					System.out.println(UNKNOWN_ERROR);
 					return false;
 				}
@@ -196,7 +196,7 @@ public class CalculateSales {
 			for (String key: branchNames.keySet()) {
 				String branchName = branchNames.get(key);
 				long branchSale = branchSales.get(key);
-				bw.write(key+","+branchName +","+Long.toString(branchSale));
+				bw.write(key + ","+ branchName + "," + Long.toString(branchSale));
 				bw.newLine();
 			}
 		}catch(IOException e) {
@@ -210,7 +210,7 @@ public class CalculateSales {
 					// ファイルを閉じる
 					bw.close();
 
-				} catch(IOException e) {
+				}catch(IOException e) {
 					System.out.println(UNKNOWN_ERROR);
 
 					return false;
