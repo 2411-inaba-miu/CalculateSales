@@ -141,6 +141,9 @@ public class CalculateSales {
 		 */
 		try {
 			File file = new File(path, fileName);
+
+//			エラー処理①②
+
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
@@ -151,8 +154,8 @@ public class CalculateSales {
 				String[] items = line.split(",");
 
 				//Mapに追加する2つの情報を putの引数として指定します。
-				branchNames.put( items[0], items[1]);
-				branchSales.put( items[0], 0L);
+				branchNames.put(items[0], items[1]);
+				branchSales.put(items[0], 0L);
 			}
 
 		}catch(IOException e) {
