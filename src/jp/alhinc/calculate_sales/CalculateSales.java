@@ -43,7 +43,6 @@ public class CalculateSales {
 
 			// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
 			//売り上げ集計課題のファイルの中にある全てのファイルを配列にする指示
-
 			File[] files = new File(args[0]).listFiles();
 
 			//先にファイルの情報を格納する List(ArrayList) を宣⾔します。
@@ -55,10 +54,10 @@ public class CalculateSales {
 
 
 			//全ファイル数分の処理を繰り返し行うことを指示
-				if(filenames.matches ("[0-9]{8}.+rcd$")) {
+			if(filenames.matches ("[0-9]{8}.+rcd$")) {
 				rcdFiles.add(files[i]);
-				}
 			}
+		}
 
 		for(int i = 0; i < rcdFiles.size(); i++) {
 				BufferedReader br = null;
@@ -112,14 +111,13 @@ public class CalculateSales {
 				}
 			}
 		}
-
-
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
 			return;
 		}
-
 	}
+
+
 
 	/**
 	 * 支店定義ファイル読み込み処理
@@ -175,6 +173,7 @@ public class CalculateSales {
 		return true;
 	}
 
+
 	/**
 	 * 支店別集計ファイル書き込み処理
 	 *
@@ -197,7 +196,7 @@ public class CalculateSales {
 			for (String key: branchNames.keySet()) {
 				String branchName = branchNames.get(key);
 				long branchSale = branchSales.get(key);
-				bw.write(branchName+","+Long.toString(branchSale));
+				bw.write(key+","+branchName +","+Long.toString(branchSale));
 				bw.newLine();
 			}
 		}catch(IOException e) {
