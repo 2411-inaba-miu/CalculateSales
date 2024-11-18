@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,10 @@ public class CalculateSales {
 	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました";
 	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません";
 	private static final String FILE_INVALID_FORMAT = "支店定義ファイルのフォーマットが不正です";
+	private static final String FILENAME_NOT_CONSECUTIVE = "売上ファイル名が連番になっていません";
+	private static final String TOTOTAL_AMOUNT_OVER_10 = "合計金額が10桁を超えました";
+	private static final String VARIABLE_FILE_INVALID_CODE = "の支店コードが不正です";
+	private static final String VARIABLE_FILE_INVALID_FORMAT = "のフォーマットが不正です";
 
 	/**
 	 * メインメソッド
@@ -35,6 +40,13 @@ public class CalculateSales {
 		Map<String, String> branchNames = new HashMap<>();
 		// 支店コードと売上金額を保持するMap
 		Map<String, Long> branchSales = new HashMap<>();
+
+//		エラー3‐1
+		if (args.length != 1) {
+		    //コマンドライン引数が1つ設定されていなかった場合は、
+		    //エラーメッセージをコンソールに表示します。
+			System.out.println(UNKNOWN_ERROR);
+		}
 
 		// 支店定義ファイル読み込み処理
 		if(!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
@@ -53,8 +65,24 @@ public class CalculateSales {
 				String fileNames = files[i].getName();
 
 			//全ファイル数分の処理を繰り返し行うことを指示
-			if(fileNames.matches ("[0-9]{8}. + rcd$")) {
+			if(fileNames.matches ("[0-9]{8}.+rcd$")) {
 				rcdFiles.add(files[i]);
+			}
+		}
+
+//		エラー3‐2
+
+//		if(rcdFiles.isFile() && fileNames.matches(正規表現構⽂)) {
+		    //対象がファイルであり、「数字8桁.rcd」なのか判定します。
+//		}
+
+//		エラー2-1(売上ファイルが8桁の数字で連番になっているかの確認)
+		Collections.sort(rcdFiles);
+		for(int i = 0; i < rcdFiles.size() - 1; i++) {
+			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
+			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
+			if((latter - former) != 1) {
+				System.out.println(FILENAME_NOT_CONSECUTIVE);
 			}
 		}
 
@@ -81,12 +109,46 @@ public class CalculateSales {
 					fileLines.add(line);
 
 				}
+
+//				ここにエラー2‐3,4入れる？
+
+
 				//fileSaleはrcdファイルの中の2行目を読み込んだ売上金額
 				//saleAmountはMapの売上金額からkeyとなる支店コードを使って取得する既存の売上金額と,
 				//新たに読み込んだ売上金額を加算したもの
+
 				String code = fileLines.get(0);
 				long fileSale = Long.parseLong(fileLines.get(1));
+
+//				エラー3－3
+				if(!fileLines.get(1).matches("^[0-9]*$")) {
+				    //売上金額が数字ではなかった場合は、
+				    //エラーメッセージをコンソールに表⽰します。
+					System.out.println(UNKNOWN_ERROR);
+				}
+
+				if (!branchNames.containsKey(code)) {
+				    //支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、
+				    //エラーメッセージをコンソールに表示します。
+					System.out.println(rcdFiles.get(i).getName() + VARIABLE_FILE_INVALID_CODE);
+				}
+
+				if(fileLines.size() != 2) {
+				    //売上ファイルの行数が2行ではなかった場合は、
+				    //エラーメッセージをコンソールに表示します。
+					System.out.println(rcdFiles.get(i).getName()  + VARIABLE_FILE_INVALID_FORMAT);
+				}
+
 				long saleAmount = branchSales.get(code) + fileSale;
+
+
+//				エラー処理2-2
+//				合計金額が10桁を超えた場合、エラーメッセージ「合計金額が10桁を超えました」を表示し、処理を終了する。
+
+				if(saleAmount >= 10000000000L){
+//					売上金額が11桁以上の場合、エラーメッセージをコンソールに表示します。
+					System.out.println(TOTOTAL_AMOUNT_OVER_10);
+				}
 
 				//codeはbranchSalesというMapのkeyにあたる支店コードを表します
 				//fileSalesはrcdファイルの中の2行目の加算処理を行う売上金額を表します
@@ -142,7 +204,14 @@ public class CalculateSales {
 		try {
 			File file = new File(path, fileName);
 
-//			エラー処理①②
+			/**エラー処理1-1
+			*支店定義ファイルが存在しない場合は、エラーメッセージ「支店定義ファイルが存在しません」を表示させたい
+			*/
+
+			if(!file.exists()) {
+				System.out.println(FILE_NOT_EXIST);
+				return false;
+			}
 
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
@@ -152,6 +221,14 @@ public class CalculateSales {
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				String[] items = line.split(",");
+
+				/**エラー処理1-2
+				*支店定義ファイルのフォーマットが不正な場合は、エラーメッセージ「支店定義ファイルのフォーマットが不正です」を表示したい
+				*/
+				if((items.length != 2) || (!items[0].matches("^[0-9]{3}"))) {
+					System.out.println(FILE_INVALID_FORMAT);
+					return false;
+				}
 
 				//Mapに追加する2つの情報を putの引数として指定します。
 				branchNames.put(items[0], items[1]);
