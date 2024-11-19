@@ -65,16 +65,14 @@ public class CalculateSales {
 				String fileNames = files[i].getName();
 
 			//全ファイル数分の処理を繰り返し行うことを指示
-			if(fileNames.matches ("[0-9]{8}.+rcd$")) {
+			//エラー3‐2
+			//対象がファイルであり、「数字8桁.rcd」なのか判定します。
+			if(files[i].isFile() && fileNames.matches("[0-9]{8}.+rcd$")) {
 				rcdFiles.add(files[i]);
+			} else {
+				System.out.println(UNKNOWN_ERROR);
 			}
 		}
-
-//		エラー3‐2
-
-//		if(rcdFiles.isFile() && fileNames.matches(正規表現構⽂)) {
-		    //対象がファイルであり、「数字8桁.rcd」なのか判定します。
-//		}
 
 //		エラー2-1(売上ファイルが8桁の数字で連番になっているかの確認)
 		Collections.sort(rcdFiles);
@@ -110,22 +108,22 @@ public class CalculateSales {
 
 				}
 
-//				ここにエラー2‐3,4入れる？
-
-
 				//fileSaleはrcdファイルの中の2行目を読み込んだ売上金額
 				//saleAmountはMapの売上金額からkeyとなる支店コードを使って取得する既存の売上金額と,
 				//新たに読み込んだ売上金額を加算したもの
 
 				String code = fileLines.get(0);
-				long fileSale = Long.parseLong(fileLines.get(1));
 
 //				エラー3－3
 				if(!fileLines.get(1).matches("^[0-9]*$")) {
 				    //売上金額が数字ではなかった場合は、
 				    //エラーメッセージをコンソールに表⽰します。
 					System.out.println(UNKNOWN_ERROR);
+					return;
 				}
+
+				long fileSale = Long.parseLong(fileLines.get(1));
+
 
 				if (!branchNames.containsKey(code)) {
 				    //支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、
@@ -157,16 +155,16 @@ public class CalculateSales {
 				//MapであるbranchSalesに支店コードと集計金額を格納します
 				branchSales.put(code, saleAmount);
 
-			}catch(IOException e) {
+			} catch (IOException e) {
 				System.out.println(UNKNOWN_ERROR);
 				return;
-			}finally {
+			} finally {
 				// ファイルを開いている場合
 				if(br != null) {
 					try {
 						// ファイルを閉じる
 						br.close();
-					}catch(IOException e) {
+					} catch (IOException e) {
 						System.out.println(UNKNOWN_ERROR);
 						return;
 					}
@@ -235,16 +233,16 @@ public class CalculateSales {
 				branchSales.put(items[0], 0L);
 			}
 
-		}catch(IOException e) {
+		} catch (IOException e) {
 			System.out.println(UNKNOWN_ERROR);
 			return false;
-		}finally {
+		} finally {
 			// ファイルを開いている場合
 			if(br != null) {
 				try {
 					// ファイルを閉じる
 					br.close();
-				}catch(IOException e) {
+				} catch (IOException e) {
 					System.out.println(UNKNOWN_ERROR);
 					return false;
 				}
@@ -279,18 +277,18 @@ public class CalculateSales {
 				bw.write(key + ","+ branchName + "," + Long.toString(branchSale));
 				bw.newLine();
 			}
-		}catch(IOException e) {
+		} catch (IOException e) {
 			System.out.println(UNKNOWN_ERROR);
 			return false;
 
-		}finally {
+		} finally {
 			// ファイルを開いている場合
 			if(bw != null) {
 				try {
 					// ファイルを閉じる
 					bw.close();
 
-				}catch(IOException e) {
+				} catch (IOException e) {
 					System.out.println(UNKNOWN_ERROR);
 
 					return false;
