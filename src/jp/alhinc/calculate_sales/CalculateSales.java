@@ -63,7 +63,7 @@ public class CalculateSales {
 
 		//全ファイル数分の処理を繰り返し行うことを指示
 		for(int i = 0; i < files.length ; i++) {
-				String fileNames = files[i].getName();
+			String fileNames = files[i].getName();
 
 			//全ファイル数分の処理を繰り返し行うことを指示
 			//エラー3‐2
@@ -85,7 +85,7 @@ public class CalculateSales {
 		}
 
 		for(int i = 0; i < rcdFiles.size(); i++) {
-				BufferedReader br = null;
+			BufferedReader br = null;
 
 			try {
 				File file = new File(args[0], rcdFiles.get(i).getName());
